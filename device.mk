@@ -406,6 +406,12 @@ PRODUCT_PACKAGES += \
     libprotobuf-cpp-full-vendorcompat \
     libprotobuf-cpp-lite-vendorcompat
 
+# RCS
+PRODUCT_PACKAGES += \
+    com.android.ims.rcsmanager \
+    PresencePolling \
+    RcsService
+
 # Releasetools
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/releasetools/device_check.sh:install/bin/device_check.sh
