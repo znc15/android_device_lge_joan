@@ -80,6 +80,9 @@ on post-fs-data
     mkdir /data/vendor/hbtp 0750 system system
 #    mkdir /data/misc/qvr 0770 system system
 
+    rm /cache/boot_lc_main.txt
+    start boot_lc_main
+
 # For cpusets initialize for Silver Only first and then Silver + Gold
 # Silver Only configuration cannot work with 0-7
 on boot
@@ -142,6 +145,13 @@ service vendor.per_proxy /vendor/bin/pm-proxy
     user system
     group system
     disabled
+
+service boot_lc_main /system/bin/logcat -f /cache/boot_lc_main.txt
+    class main
+    user root
+    group root system
+    disabled
+    oneshot
 
 on property:init.svc.vendor.per_mgr=running
     start vendor.per_proxy
@@ -418,6 +428,9 @@ on property:init.svc.zygote=running
 
 on property:init.svc.zygote=restarting
     stop ppd
+
+on property:sys.boot_completed=1
+    stop boot_lc_main
 
 #
 #service nqs /system/bin/nqs
