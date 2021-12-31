@@ -1,3 +1,6 @@
+# Maintaier
+MIKU_MASTER := Sakura
+
 # Inherit some common miku stuff.
 $(call inherit-product, vendor/miku/build/product/miku_product.mk)
 
