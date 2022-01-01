@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <compatibility-matrix version="2.0" type="framework">
 <hal format="hidl" optional="true">
     <name>android.hardware.atrace</name>
@@ -438,6 +439,8 @@
     </interface>
 </hal>
 =======
+=======
+>>>>>>> parent of 87713b3... joan-common: nuke framework_compatibility_matrix
 <compatibility-matrix version="1.0" type="framework" level="3">
     <hal format="hidl" optional="true">
         <name>android.hardware.authsecret</name>
@@ -1555,5 +1558,8 @@
             <instance>default</instance>
         </interface>
     </hal>
+<<<<<<< HEAD
+>>>>>>> parent of 87713b3... joan-common: nuke framework_compatibility_matrix
+=======
 >>>>>>> parent of 87713b3... joan-common: nuke framework_compatibility_matrix
 </compatibility-matrix>
