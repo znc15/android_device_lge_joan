@@ -7,7 +7,7 @@ PRODUCT_SOONG_NAMESPACES += \
     device/lge/joan
 
 # Overlays
-DEVICE_PACKAGE_OVERLAYS += device/essential/mata/overlay
+DEVICE_PACKAGE_OVERLAYS += device/lge/joan/overlay
 
 PRODUCT_ENFORCE_RRO_TARGETS := *
 
