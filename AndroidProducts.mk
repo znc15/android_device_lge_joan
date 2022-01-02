@@ -15,8 +15,8 @@
 #
 
 PRODUCT_MAKEFILES += \
-    $(LOCAL_DIR)/miku_joan.mk
+    $(LOCAL_DIR)/exthm_joan.mk
 
 COMMON_LUNCH_CHOICES := \
-    miku_joan-userdebug \
-    miku_joan-eng
+    exthm_joan-userdebug \
+    exthm_joan-eng
