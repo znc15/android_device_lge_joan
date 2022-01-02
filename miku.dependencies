@@ -1,0 +1,26 @@
+[
+ {
+    "remote": "github",
+    "repository": "lllgts/kernel_lge_msm8998",
+    "target_path": "kernel/lge/msm8998",
+    "branch": "bubble_EAS_S"
+  },
+  {
+    "remote": "github",
+    "repository": "lllgts/proprietary_vendor_lge",
+    "target_path": "vendor/lge",
+    "branch": "MIKU-UI"
+  },
+  {
+    "remote": "github",
+    "repository": "lllgts/android_device_lge_common",
+    "target_path": "device/lge/common",
+    "branch": "MIKU-UI"
+  },
+  {
+    "remote": "github",
+    "repository": "lllgts/android_hardware_lge",
+    "target_path": "hardware/lge",
+    "branch": "MIKU-UI"
+  }
+]
