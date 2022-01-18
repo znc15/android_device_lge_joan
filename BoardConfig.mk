@@ -201,6 +201,7 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.joan
 
 # RIL
 ENABLE_VENDOR_RIL_SERVICE := true
+TARGET_RIL_VARIANT := caf
 
 # Releasetools
 TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)/releasetools
