@@ -1,0 +1,800 @@
+# lg v30调度
+on property:sys.boot_completed=1
+exec u:r:init:s0 -- /init.spectrum.sh exec u:r:su:s0 root root -- /init.spectrum.sh
+exec u:r:magisk:s0 root root -- /init.spectrum.sh
+exec u:r:supersu:s0 root root -- /init.spectrum.sh
+setprop spectrum.support 1
+setprop persist.spectrum.kernel bubblekernel
+
+# 均衡模式
+on property:persist.spectrum.profile=0
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 300000
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 5000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 5000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 10
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 10
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler zen
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 762
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 762
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 0
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 257000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 6
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 6
+#end FastSpeed
+
+#性能模式
+on property:persist.spectrum.profile=1
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "performance"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "performance"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 2457600
+write /sys/class/devfreq/soc:qcom,cpubw/max_freq 13763
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 50000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 50000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 100
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 100
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 100
+# RT激进度
+write /dev/stune/rt/schedtune.boost 100
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 100
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 1
+write /dev/stune/background/schedtune.prefer_idle 1
+write /dev/stune/system-background/schedtune.sched_boost 1
+write /dev/stune/system-background/schedtune.prefer_idle 1
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 3
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "performance"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 710000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 0
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 0
+#end FastSpeed
+
+#省电模式
+on property:persist.spectrum.profile=2
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 0
+write /sys/devices/system/cpu/cpu5/online 0
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1555200
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 1651200
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 300000
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 762
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 762
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 500
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 0
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 10000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 0
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 10000
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 0
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 1
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 1
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 0
+write /dev/stune/schedtune.prefer_idle 0
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 0
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 0
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 0
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler cfq
+write /sys/block/sda/queue/read_ahead_kb 128
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 0
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 1
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 257000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 6
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 6
+#end FastSpeed
+
+#游戏模式
+on property:persist.spectrum.profile=3
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1036800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1420800
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 50000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 50000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 10
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 20
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 50
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 5
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 1
+write /dev/stune/background/schedtune.prefer_idle 1
+write /dev/stune/system-background/schedtune.sched_boost 1
+write /dev/stune/system-background/schedtune.prefer_idle 1
+# 调度I/O
+write /sys/block/sda/queue/scheduler zen
+write /sys/block/sda/queue/read_ahead_kb 128
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 2
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 515000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 3
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 3
+#end FastSpeed
+
+#exthmui游戏模式调度
+#level 1(change from balance)
+on property:sys.performance.level=1
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 300000
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 5000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 5000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 15
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 15
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler fiops
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 1525
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 1525
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 1
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 257000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 6
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 6
+
+#level 2
+on property:sys.performance.level=2
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 518400
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 422400
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 5000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 5000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 20
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 20
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler fiops
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 4173
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 4173
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 1
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 257000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 6
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 6
+
+#level 3
+on property:sys.performance.level=3
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1036800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1056000
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 20000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 20000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 20
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 30
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler fiops
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 4173
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 4173
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 1
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 414000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 4
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 4
+
+#level 4
+on property:sys.performance.level=4
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1036800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1056000
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 20000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 20000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 20
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 50
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler fiops
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 4173
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 4173
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 2
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 515000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 3
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 3
+
+#level 5
+on property:sys.performance.level=5
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1036800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1056000
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 20000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 20000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 20
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 50
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler fiops
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 7759
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 7759
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 2
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 596000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 2
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 2
+
+#level 6
+on property:sys.performance.level=6
+write /sys/devices/system/cpu/cpu0/online 1
+write /sys/devices/system/cpu/cpu4/online 1
+write /sys/devices/system/cpu/cpu5/online 1
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+# CPU频率
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1900800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_max_freq 2457600
+write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1036800
+write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1056000
+# 小核微调
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us 50000
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us 500
+# 大核微调
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/down_rate_limit_us 50000
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/iowait_boost_enable 1
+write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/up_rate_limit_us 500
+# 后台任务激进度
+write /dev/stune/background/schedtune.boost 1
+# 前台任务激进度
+write /dev/stune/foreground/schedtune.boost 20
+# 当前界面激进度
+write /dev/stune/top-app/schedtune.boost 50
+# RT激进度
+write /dev/stune/rt/schedtune.boost 1
+# 系统级后台激进度
+write /dev/stune/system-background/schedtune.boost 0
+# 核心激进度开关
+write /dev/stune/schedtune.sched_boost 1
+write /dev/stune/schedtune.prefer_idle 1
+write /dev/stune/top-app/schedtune.sched_boost 1
+write /dev/stune/top-app/schedtune.prefer_idle 1
+write /dev/stune/rt/schedtune.sched_boost 1
+write /dev/stune/rt/schedtune.prefer_idle 1
+write /dev/stune/foreground/schedtune.sched_boost 1
+write /dev/stune/foreground/schedtune.prefer_idle 1
+write /dev/stune/background/schedtune.sched_boost 0
+write /dev/stune/background/schedtune.prefer_idle 0
+write /dev/stune/system-background/schedtune.sched_boost 0
+write /dev/stune/system-background/schedtune.prefer_idle 0
+# 调度I/O
+write /sys/block/sda/queue/scheduler fiops
+write /sys/block/sda/queue/read_ahead_kb 128
+write /proc/sys/net/ipv4/tcp_congestion_control "cubic"
+write /sys/class/devfreq/soc:qcom,cpubw/min_freq 7759
+write /sys/class/devfreq/soc:qcom,mincpubw/min_freq 7759
+write /sys/block/sda/queue/iostats 0
+#adreno boost
+write /sys/class/kgsl/kgsl-3d0/devfreq/adrenoboost 2
+# CPU任务分配
+# 后台任务
+write /dev/cpuset/background/cpus 0-2
+# 前台任务
+write /dev/cpuset/foreground/cpus 0-2,4-7
+# 当前界面的任务
+write /dev/cpuset/top-app/cpus 0-7
+# 系统级后台任务
+write /dev/cpuset/system-background/cpus 0-3
+# 相机任务
+write /dev/cpuset/camera-daemon/cpus 0-3
+# 关闭Soc温控
+write /sys/module/msm_thermal/parameters/enabled 0
+# 禁用热插拔
+write /sys/module/msm_thermal/core_control/enabled 0
+# 关闭VDD温控
+write /sys/module/msm_thermal/vdd_restriction/enabled 0
+# 设置GPU
+write /sys/class/kgsl/kgsl-3d0/devfreq/governor "msm-adreno-tz"
+write /sys/class/kgsl/kgsl-3d0/devfreq/max_freq 710000000
+write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 670000000
+# 最小功耗级别
+write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 1
+# 最大功耗级别
+write /sys/class/kgsl/kgsl-3d0/max_pwrlevel 0
+# 默认功耗级别
+write /sys/class/kgsl/kgsl-3d0/default_pwrlevel 1
