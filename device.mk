@@ -377,7 +377,7 @@ PRODUCT_PACKAGES += \
     libxml2
 
 PRODUCT_COPY_FILES += \
-    $(COMMON_PATH)/configs/powerhint.json:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.json
+    $(DEVICE_PATH)/configs/powerhint.json:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.json
 
 # QCOM
 PRODUCT_COPY_FILES += \
