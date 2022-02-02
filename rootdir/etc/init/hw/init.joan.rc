@@ -168,3 +168,10 @@ on property:vendor.lge.vrmode=true
 
 on property:vendor.lge.hdmi.block=*
     write /sys/devices/virtual/graphics/fb2/dp_external_block ${vendor.lge.hdmi.block}
+
+# qcom-power triggers this property
+on property:sys.post_boot.parsed=1
+    # Setup permission for powerHAL
+    chown system system /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hyst_trigger_count
+    chown system system /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hist_memory
+    chown system system /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hyst_length
