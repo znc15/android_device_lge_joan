@@ -1,8 +1,5 @@
-# maintainer flag
-ARCANA_MAINTAINER := YangXiaoMian
-
 # Inherit some common exthm stuff.
-$(call inherit-product, vendor/aosp/config/common.mk)
+$(call inherit-product, vendor/exthm/config/common.mk)
 
 $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_n_mr1.mk)
 
@@ -25,7 +22,7 @@ WITH_GAPPS := false
 
 # Device identifiers
 PRODUCT_DEVICE := joan
-PRODUCT_NAME := aosp_joan
+PRODUCT_NAME := exthm_joan
 PRODUCT_BRAND := lge
 PRODUCT_MODEL := joan
 PRODUCT_MANUFACTURER := LGE
