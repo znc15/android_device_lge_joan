@@ -516,6 +516,9 @@ PRODUCT_PACKAGES += \
     ipacm \
     IPACM_cfg.xml
 
+# Others
+    libpreload
+
 # WiFi Display
 #PRODUCT_PACKAGES += \
 #    libaacwrapper \
