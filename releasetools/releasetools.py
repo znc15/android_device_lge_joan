@@ -15,6 +15,5 @@
 #
 
 def FullOTA_InstallEnd(info):
-    info.script.AppendExtra('assert(run_program("/tmp/install/bin/device_check.sh") == 0);');
     info.script.AppendExtra('delete("/data/system/locksettings.db");')
 
