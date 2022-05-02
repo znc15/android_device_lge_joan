@@ -517,6 +517,7 @@ PRODUCT_PACKAGES += \
     IPACM_cfg.xml
 
 # Others
+PRODUCT_PACKAGES += \
     libpreload
 
 # WiFi Display
