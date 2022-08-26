@@ -458,10 +458,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PACKAGES += \
     textclassifier.smartselection.bundle1
 
-# Touch
-PRODUCT_PACKAGES += \
-    vendor.lineage.touch@1.0-service.joan
-
 # Touchscreen
 PRODUCT_PACKAGES += \
     libtinyxml2
@@ -511,6 +507,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     ipacm \
     IPACM_cfg.xml
+
+# Others
+PRODUCT_PACKAGES += \
+    libpreload
 
 # WiFi Display
 #PRODUCT_PACKAGES += \
